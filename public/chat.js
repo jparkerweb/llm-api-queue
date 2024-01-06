@@ -9,6 +9,7 @@ let randomQuestions = [];           // To hold the random questions
 let currentRequestId = null;        // To hold the current request ID
 let isAwaitingResponse = false;     // Flag to track if we are waiting for a response
 let HEARTBEAT_INTERVAL = 1000 * 2;  // Setup a default value for the heartbeat interval (fetch from server later)
+let COLLECTION_NAME;                // Session collection name
 
 const stopButton = document.getElementById("stopButton");                       // Stop button element
 const sendButton = document.getElementById("sendButton");                       // Send button element
@@ -21,12 +22,15 @@ const questionsFile = "/questions/facts.txt";                                   
 // Set the links to the chat and admin dashboard pages
 document.addEventListener('DOMContentLoaded', () => {
     fetchHeartbeatInterval(); // Fetch the heartbeat interval from the server
+    fetchCollectionName(); // Fetch the collection name from the server
     const currentUrl = window.location.href;
     const chatLink = document.getElementById('chatLink');
-    const dashboardLink = document.getElementById('dashboardLink');
+    const redisDashboardLink = document.getElementById('redisDashboardLink');
+    const chromaDashboardLink = document.getElementById('chromaDashboardLink');
 
     chatLink.href = currentUrl; // Set href to the current URL
-    dashboardLink.href = new URL('/admin/queues', currentUrl); // Append '/admin/queues' to the current URL
+    redisDashboardLink.href = new URL('/admin/queues', currentUrl); // Append '/admin/queues' to the current URL
+    chromaDashboardLink.href = new URL('/list-collections', currentUrl); // Append '/list-collections' to the current URL
 });
 
 
@@ -64,6 +68,19 @@ async function fetchHeartbeatInterval() {
         // Set a default value in case of error
         HEARTBEAT_INTERVAL = 1500;
         setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+    }
+}
+
+
+// Fetch collection name from the server for the session
+async function fetchCollectionName() {
+    try {
+        const response = await fetch('/init-collection');
+        const data = await response.json();
+        COLLECTION_NAME = data.collectionName;
+        console.info('Collection name:', COLLECTION_NAME)
+    } catch (error) {
+        console.error('Error fetching collection name:', error);
     }
 }
 
@@ -149,7 +166,7 @@ async function sendMessage(showQuestion = true) {
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ prompt: message, requestId }),
+            body: JSON.stringify({ prompt: message, requestId, COLLECTION_NAME }),
             signal
         });
 

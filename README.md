@@ -5,9 +5,7 @@ This is a web-based chat application that integrates Large Language Model (LLM) 
 
 ## Prerequisites
 
-<div class="🌟 li-margin-bottom-10 li-big-links"></div>
-
-- [Redis](https://redis.io/)
+- ### Setup [Redis](https://redis.io/) Docker Container  
     pull docker image
     ```
     docker pull redis
@@ -18,30 +16,55 @@ This is a web-based chat application that integrates Large Language Model (LLM) 
     docker run -p 6379:6379 --name llm-redis -d redis
     ```
 
-- Install/Build [llama.cpp](https://github.com/ggerganov/llama.cpp/tree/master/examples/server) with running model of choice
-    server with continuous batching and parallel requests
+- ### Run an LLM via Llama.cpp  
+  - Download the lastest version of `llama.cpp` from https://github.com/ggerganov/llama.cpp or run the downloader PowerShell Script here:  
+    `./tools/download-latest-llama.ps1`
+  - Download a model (GGUF architecture is recommened):  
+    example model ⇢ [Mistral-7B-Instruct-v0.2-GGUF](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF)
+  - Run the Llama.cpp server with continuous batching and parallel requests via command line or llmserver PowerShell Script:  
+    `/tools/llmserver.ps1`
+
     ```
     .\server.exe -m .\models\7b\mistral-7b-instruct-v0.2.Q4_K_M.gguf -c 2048 -cb -np 2
     ```
 
-- npm dependencies for this project
-    clone and run this from cloned repo directory
+- ### Install npm Dependencies
+    run from cloned repo directory
     ```
     npm ci
     ```
+
+- ### Setup Chroma Vector Store Container
+  Pull latest Docker Image
+  ```
+  docker pull chromadb/chroma
+  ```
+
+  Create storage for your Chroma Docker instance:
+  - create a directory somewhere on the server  
+    (example: `c:\chromadb-storage\`)
+
+- Start a Docker Container using server storage from previous step  
+  ```
+  docker run -d --name llm-chroma -p 8001:8000 -v C:\Git\llama\chromadb-storage:/data chromadb/chroma
+  ```
 
 ---
 
 ## Run
 
-- Local web server
-    run local web server (llama server and docker redis must be running)
+- Ensure the Redis and Chroma Docker Containers are started
+- Ensure the Llama.cpp server is running a loaded LLM
+- Start the Express Web server via
     ```
     node server.js
     ```
 
-- Visit local web server page (link displayed on server.js startup)
-    default site ⇢ [http://localhost:3000/](http://localhost:3001/)
+- Visit web server page (link displayed on server.js startup)  
+    default site ⇢ [http://localhost:3001/](http://localhost:3001/)
 
-- Optionally view redis admin dashboard (link displayed on server.js startup)
-    default site ⇢ [http://localhost:3000/admin/queues/](http://localhost:3001/admin/queues/)
+- Optionally Dashboards  
+  - Redis Queue Dashboard  
+    default site ⇢ [http://localhost:3001/admin/queues/](http://localhost:3001/admin/queues/)
+  - Chroma Collections Dashboard  
+    default site ⇢ [http://localhost:3001/list-collections]

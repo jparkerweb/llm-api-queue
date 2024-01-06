@@ -4,31 +4,41 @@ Write-Host ""
 Write-Host "This script will download and extract the latest version of llama.cpp"
 Write-Host "from GitHub 'ggerganov/llama.cpp'"
 Write-Host ""
-Write-Host "You will be asked to select a CPU Instruction version and target directory"
+Write-Host "You will be asked to a version targeting your hardware capabilities and target directory"
 Write-Host "Please press Enter to continue, or Ctrl + C to exit..."
 Read-Host
 
 # Present options for CPU version
 Write-Host ""
 Write-Host "------------------------------------------------------------------------------------"
-Write-Host "Select the CPU version of the file to download:"
-Write-Host "If you don't what what version to download you"
-Write-Host "can download CPU-Z from the following website"
+Write-Host "Select the version of the file to download:"
+Write-Host "The 'avx' option run on CPU only."
+Write-Host "You can download CPU-Z from the following website"
 Write-Host "which will show you what CPU Instructions you"
 Write-Host "have available: https://www.cpuid.com/softwares/cpu-z.html"
+Write-Host "or choose a 'cu' option to use the GPU. visit"
+Write-Host "https://github.com/ggerganov/llama.cpp for more information."
 Write-Host ""
 Write-Host "1) avx"
 Write-Host "2) avx2"
 Write-Host "3) avx512"
-Write-Host "4) openblas < unkonwn"
-$choice = Read-Host "Enter your choice (1, 2, 3, or 4)"
+Write-Host "4) clblast"
+Write-Host "5) cublas-cu11.7.1"
+Write-Host "6) cublas-cu12.2.0"
+Write-Host "7) noavx"
+Write-Host "8) openblas"
+$choice = Read-Host "Enter your choice (1, 2, 3, 4, 5, 6, 7 or 8)"
 
 # Map user choice to CPU version
 switch ($choice) {
     "1" { $cpuVersion = "avx" }
     "2" { $cpuVersion = "avx2" }
     "3" { $cpuVersion = "avx512" }
-    "4" { $cpuVersion = "openblas" }
+    "4" { $cpuVersion = "clblast" }
+    "5" { $cpuVersion = "cublas-cu11.7.1" }
+    "6" { $cpuVersion = "cublas-cu12.2.0" }
+    "7" { $cpuVersion = "noavx" }
+    "8" { $cpuVersion = "openblas" }
     default { 
         Write-Error "Invalid choice. Exiting script."
         exit
