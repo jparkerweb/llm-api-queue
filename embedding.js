@@ -43,47 +43,41 @@ export async function embedText(largeText, maxChunkTokenCount = 100, chunkOverla
 
 
 // Function to chunk text into smaller pieces
-async function chunkText(text, maxTokens, overlap) {
-    const tokenizer = await AutoTokenizer.from_pretrained('all-MiniLM-L6-v2');
-
+async function chunkText(text, maxTokens = 100, overlap = 10) {
     console.log(`maxTokens: ${maxTokens}, overlap: ${overlap}`);
-    const splitIntoSentences = (text) => text.match(/[^.!?]+[.!?]+/g) || [text];
-    const sentences = splitIntoSentences(text);
+
+    const tokenizer = await AutoTokenizer.from_pretrained('all-MiniLM-L6-v2');
+    const sentences = text.match(/[^.!?]+[.!?]+|\s*\n\s*/g) || [text]; // Split by sentences or new lines
 
     let chunks = [];
     let currentChunk = [];
     let currentTokenCount = 0;
+    let overlapBuffer = [];
 
     for (const sentence of sentences) {
         const { input_ids } = await tokenizer(sentence);
         const sentenceTokens = input_ids.data;
         const numTokensInSentence = input_ids.size;
 
-        if (numTokensInSentence > maxTokens) {
-            let start = 0;
-            let end = maxTokens;
-            while (start < numTokensInSentence) {
-                const chunkTokens = sentenceTokens.slice(start, end);
-                const chunk = chunkTokens.join(" ");
-                chunks.push({ chunk, tokenCount: chunkTokens.length });
-                start += maxTokens - overlap;
-                end = Math.min(start + maxTokens, numTokensInSentence);
-            }
-            currentChunk = [];
-            currentTokenCount = 0;
-            continue;
-        }
-
         if (currentTokenCount + numTokensInSentence > maxTokens) {
+            // Finalize current chunk and prepare for the next
             chunks.push({ chunk: currentChunk.join(" "), tokenCount: currentTokenCount });
-            currentChunk = [];
-            currentTokenCount = 0;
+            currentChunk = [...overlapBuffer];
+            currentTokenCount = overlapBuffer.reduce((sum, sentence) => sum + sentence.split(' ').length, 0);
         }
 
+        // Update the current chunk
         currentChunk.push(sentence);
         currentTokenCount += numTokensInSentence;
+
+        // Manage overlap buffer
+        overlapBuffer.push(sentence);
+        if (overlapBuffer.join(" ").split(' ').length > overlap) {
+            overlapBuffer.shift(); // Remove the first sentence to maintain overlap size
+        }
     }
 
+    // Add the last chunk
     if (currentChunk.length) {
         chunks.push({ chunk: currentChunk.join(" "), tokenCount: currentTokenCount });
     }
