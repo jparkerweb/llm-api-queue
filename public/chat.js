@@ -11,6 +11,7 @@ let isAwaitingResponse = false;     // Flag to track if we are waiting for a res
 let HEARTBEAT_INTERVAL = 1000 * 2;  // Setup a default value for the heartbeat interval (fetch from server later)
 let COLLECTION_NAME;                // Session collection name
 
+const collectionDiv = document.getElementById("collection");                    // Collection element (to dispaly the collection name)
 const stopButton = document.getElementById("stopButton");                       // Stop button element
 const sendButton = document.getElementById("sendButton");                       // Send button element
 const randomQuestionButton = document.getElementById("randomQuestionButton");   // Random question button element
@@ -79,6 +80,7 @@ async function fetchCollectionName() {
         const data = await response.json();
         COLLECTION_NAME = data.collectionName;
         console.info('Collection name:', COLLECTION_NAME)
+        collectionDiv.innerHTML = `<a target="${COLLECTION_NAME}" href="${window.location.href}list-collection?collectionName=${COLLECTION_NAME}">${COLLECTION_NAME}</a>`;
     } catch (error) {
         console.error('Error fetching collection name:', error);
     }
