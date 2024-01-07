@@ -17,7 +17,7 @@ export async function htmlListCollections(collectionsList) {
             }
             body {
                 color: white;
-                background: #227093;
+                background: #191C24;
                 font-family: Arial, sans-serif;
                 text-align: center;
                 display: flex;
@@ -31,7 +31,7 @@ export async function htmlListCollections(collectionsList) {
                 padding: 20px;
             }
             .button {
-                background-color: #60a3bc;
+                background-color: #046e96;
                 color: white;
                 padding: 10px 15px;
                 text-align: center;
@@ -54,17 +54,15 @@ export async function htmlListCollections(collectionsList) {
                 justify-content: center;
             }
             li {
-                border: 2px solid #0c5a93a8;
                 border-radius: 10px;
                 padding: 6px 10px;
                 line-height: 1.38;
                 margin: 10px;
-                background: #0c5a93a8;
+                background: #444c61;
                 color: #fff;
             }
             li:hover {
-                background: #0c5a93a8;
-                border-color: #61bbd6;
+                background: #7A2E0E;
             }
             a,
             a:visited,
@@ -233,7 +231,7 @@ export async function htmlListCollection(collectionName, collectionListTableRows
             }
             body {
                 color: white;
-                background: #227093;
+                background: #191C24;
                 font-family: Arial, sans-serif;
                 text-align: center;
                 display: flex;
@@ -291,14 +289,14 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                 width: 8px; /* Adjust the width of the scrollbar */
             }
             .table-container::-webkit-scrollbar-track {
-                background: #227093; /* Track color */
+                background: #FEC849; /* Track color */
             }
             .table-container::-webkit-scrollbar-thumb {
-                background: #00cec9; /* Handle color */
+                background: #7A2E0E; /* Handle color */
                 border-radius: 4px; /* Handle border radius */
             }
             .table-container::-webkit-scrollbar-thumb:hover {
-                background: #81ecec; /* Handle color on hover */
+                background: #7A2E0E; /* Handle color on hover */
             }
             th, td {
                 padding: 12px 15px;
@@ -306,7 +304,7 @@ export async function htmlListCollection(collectionName, collectionListTableRows
             th {
                 position: sticky;
                 top: 0;
-                background-color: #0c5a93;
+                background-color: #444c61;
                 color: white;
                 font-size: 16px;
             }    
@@ -346,6 +344,7 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                             <th>ID</th>
                             <th>Source</th>
                             <th>Document</th>
+                            <th>Token Count</th>
                             <th>Date Added</th>
                         </tr>
                         ${collectionListTableRows}

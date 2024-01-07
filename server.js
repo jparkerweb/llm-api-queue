@@ -159,8 +159,8 @@ async function streamLlamaData(prompt, res, job) {
                 collectionName,
                 generateGUID(),
                 textChunksAndEmbedding.embedding,
-                { source: "LLM", dateAdded: Date.now() },
-                textChunksAndEmbedding.textChunk,
+                { source: "LLM", tokenCount: textChunksAndEmbedding.tokenCount, dateAdded: Date.now() },
+                textChunksAndEmbedding.text,
             ).catch(error => {
                 console.error('Error adding to collection:', error);
             });
@@ -259,21 +259,34 @@ app.get('/list-collection', async (req, res) => {
         let collection = await peekCollection(collectionName, 100);
         let collectionListTableRows = "";
 
+        // sort the collection by metadata.dateAdded
+        if (collection && collection.ids.length > 0) {
+            let ids = collection.ids;
+            let metadatas = collection.metadatas;
+            let documents = collection.documents;
+            let sortedCollection = [];
+            for (let i = 0; i < ids.length; i++) {
+                sortedCollection.push({ id: ids[i], metadata: metadatas[i], document: documents[i] });
+            }
+            sortedCollection.sort((a, b) => (a.metadata.dateAdded > b.metadata.dateAdded) ? 1 : -1);
+            collection.ids = sortedCollection.map(result => result.id);
+            collection.metadatas = sortedCollection.map(result => result.metadata);
+            collection.documents = sortedCollection.map(result => result.document);
+        }
+
+        // build the table rows
         for (let i = 0; i < collection.ids.length; i++) {
             const id = collection.ids[i];
             const source = collection.metadatas[i].source;
-            const originalDocument = collection.documents[i];
-            const document = originalDocument.length > 100 
-                ? originalDocument.substring(0, 100) + "..." 
-                : originalDocument;
-
+            const document = collection.documents[i] || "";
+            const tokenCount = collection.metadatas[i].tokenCount;
             const dateAdded = new Date(collection.metadatas[i].dateAdded).toLocaleString();
 
-            collectionListTableRows += `<tr><td>${id}</td><td>${source}</td><td>${document}</td><td>${dateAdded}</td></tr>`;
+            collectionListTableRows += `<tr><td>${id}</td><td>${source}</td><td>${document}</td><td>${tokenCount}</td><td>${dateAdded}</td></tr>`;
         }
 
         if (collectionListTableRows === "") {
-            collectionListTableRows = "<tr><td colspan='4' style='text-align:center'>No documents in this collection</td></tr>";
+            collectionListTableRows = "<tr><td colspan='5' style='text-align:center'>No documents in this collection</td></tr>";
         }
 
         const html = await htmlListCollection(collectionName, collectionListTableRows);
@@ -371,8 +384,8 @@ app.post('/chat', async (req, res) => {
                 collectionName,
                 generateGUID(),
                 textChunksAndEmbedding.embedding,
-                { source: "USER", dateAdded: Date.now() },
-                textChunksAndEmbedding.textChunk,
+                { source: "USER", tokenCount: textChunksAndEmbedding.tokenCount, dateAdded: Date.now() },
+                textChunksAndEmbedding.text,
             ).catch(error => {
                 console.error('Error adding to collection:', error);
                 success = false;

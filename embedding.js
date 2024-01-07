@@ -23,13 +23,16 @@ export async function embedText(largeText, maxChunkTokenCount = 100, chunkOverla
     for (const textChunk of textChunks) {
         // console.log(`Processing chunk: ${textChunk}`);
         try {
-            let embedding = await createEmbedding(textChunk);
+            const text = textChunk.chunk;
+            let embedding = await createEmbedding(textChunk.chunk);
+            const tokenCount = textChunk.tokenCount;
             
             // Convert chunkEmbedding to a regular array if it's not already
             embedding = Array.isArray(embedding) ? embedding : Array.from(embedding);
             
-            combinedResults.push({ textChunk, embedding });
-            // console.log("embedding: ", embedding);
+            combinedResults.push({ text, embedding, tokenCount });
+            // console.log(`text chunk: ${textChunk.chunk}`);
+            // console.log(`toekn count: ${textChunk.tokenCount}`);
         } catch (error) {
             console.error('Error creating embedding:', error);
         }
@@ -39,10 +42,12 @@ export async function embedText(largeText, maxChunkTokenCount = 100, chunkOverla
 }
 
 
-function chunkText(text, maxTokens, overlap) {
+// Function to chunk text into smaller pieces
+async function chunkText(text, maxTokens, overlap) {
+    const tokenizer = await AutoTokenizer.from_pretrained('all-MiniLM-L6-v2');
+
     console.log(`maxTokens: ${maxTokens}, overlap: ${overlap}`);
     const splitIntoSentences = (text) => text.match(/[^.!?]+[.!?]+/g) || [text];
-    const tokenizeSentence = (sentence) => sentence.split(/\s+/);
     const sentences = splitIntoSentences(text);
 
     let chunks = [];
@@ -50,15 +55,17 @@ function chunkText(text, maxTokens, overlap) {
     let currentTokenCount = 0;
 
     for (const sentence of sentences) {
-        const sentenceTokens = tokenizeSentence(sentence);
-        const numTokensInSentence = sentenceTokens.length;
+        const { input_ids } = await tokenizer(sentence);
+        const sentenceTokens = input_ids.data;
+        const numTokensInSentence = input_ids.size;
 
         if (numTokensInSentence > maxTokens) {
             let start = 0;
             let end = maxTokens;
             while (start < numTokensInSentence) {
-                const chunk = sentenceTokens.slice(start, end).join(" ");
-                chunks.push(chunk);
+                const chunkTokens = sentenceTokens.slice(start, end);
+                const chunk = chunkTokens.join(" ");
+                chunks.push({ chunk, tokenCount: chunkTokens.length });
                 start += maxTokens - overlap;
                 end = Math.min(start + maxTokens, numTokensInSentence);
             }
@@ -68,7 +75,7 @@ function chunkText(text, maxTokens, overlap) {
         }
 
         if (currentTokenCount + numTokensInSentence > maxTokens) {
-            chunks.push(currentChunk.join(" "));
+            chunks.push({ chunk: currentChunk.join(" "), tokenCount: currentTokenCount });
             currentChunk = [];
             currentTokenCount = 0;
         }
@@ -78,11 +85,12 @@ function chunkText(text, maxTokens, overlap) {
     }
 
     if (currentChunk.length) {
-        chunks.push(currentChunk.join(" "));
+        chunks.push({ chunk: currentChunk.join(" "), tokenCount: currentTokenCount });
     }
 
     return chunks;
 }
+
 
 
 // Create the embedding pipeline
