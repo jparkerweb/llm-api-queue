@@ -347,7 +347,7 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                 background-color: #f2f2f2;
             }    
             tr:hover {
-                background-color: papayawhip;
+                background-color: #07b6f94f;
             }    
             @media screen and (max-width: 600px) {
                 table {
