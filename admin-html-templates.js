@@ -118,6 +118,8 @@ export async function htmlDeleteCollections() {
         html, body {
             height: 100%;
             margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         body {
             font-family: Arial, sans-serif;
@@ -148,10 +150,10 @@ export async function htmlDeleteCollections() {
     <body>
         <div class='wrapper'>
             <div class="message">🔪 Deleted All Collections</div>
-            <div class="timer" id="countdown">Redirecting in 2 seconds...</div>
+            <div class="timer" id="countdown">Redirecting in 3 seconds...</div>
         </div>
         <script>
-        let timeLeft = 2;
+        let timeLeft = 3;
         const timerElement = document.getElementById("countdown");
         const countdown = setInterval(() => {
             timeLeft--;
@@ -180,6 +182,8 @@ export async function htmlDeleteCollection(collectionName) {
         html, body {
             height: 100%;
             margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         body {
             font-family: Arial, sans-serif;
@@ -213,10 +217,10 @@ export async function htmlDeleteCollection(collectionName) {
     <body>
         <div class='wrapper'>
             <div class="message">🔪 Deleted Collection<br><span class='collection-name'>${collectionName}</span></div>
-            <div class="timer" id="countdown">Redirecting in 2 seconds...</div>
+            <div class="timer" id="countdown">Redirecting in 3 seconds...</div>
         </div>
         <script>
-        let timeLeft = 2;
+        let timeLeft = 3;
         const timerElement = document.getElementById("countdown");
         const countdown = setInterval(() => {
             timeLeft--;
