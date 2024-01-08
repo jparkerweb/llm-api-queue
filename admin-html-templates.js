@@ -30,8 +30,24 @@ export async function htmlListCollections(collectionsList) {
                 margin: 0 auto 150px auto;
                 padding: 20px;
             }
+            h1 {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+            .title {
+                background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                width: fit-content;
+                margin-top: 0px;
+                margin-left: auto;
+                margin-right: auto;
+                font-weight: 600;
+                margin-block-end: calc(0.83em - 0.5vh);
+            }
             .button {
-                background-color: #046e96;
+                background-color: #353b48;
                 color: white;
                 padding: 10px 15px;
                 text-align: center;
@@ -42,8 +58,9 @@ export async function htmlListCollections(collectionsList) {
                 font-size: 0.9em;
                 line-height: 1.38;
             }
-            .button--red {
-                background-color: #d9534f;
+            .button--delete {
+                background-color: #6717CC;
+                background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
             }
             ul {
                 display: inline-flex;
@@ -62,7 +79,7 @@ export async function htmlListCollections(collectionsList) {
                 color: #fff;
             }
             li:hover {
-                background: #7A2E0E;
+                background: #4261ED;
             }
             a,
             a:visited,
@@ -74,9 +91,9 @@ export async function htmlListCollections(collectionsList) {
         </head>
         <body>
             <div class='wrapper'>
-                <h1>🍱 Chroma Collections</h1>
+                <h1>📘 <span class='title'>Chroma Collections</span></h1>
                 <button class="button" onclick="window.location.href='/list-collections';">🔁 REFRESH COLLECTIONS</button>
-                <button class="button button--red" onclick="window.location.href='/delete-collections';">🔪 DELETE ALL COLLECTIONS</button>
+                <button class="button button--delete" onclick="window.location.href='/delete-collections';">🔪 DELETE ALL COLLECTIONS</button>
                 <div id="collections">
                     <ul>
                         ${collectionsList}
@@ -105,7 +122,8 @@ export async function htmlDeleteCollections() {
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #b33939;
+            background-color: #6717CC;
+            background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
             margin-top: 50px;
             color: white;
             display: flex;
@@ -119,7 +137,6 @@ export async function htmlDeleteCollections() {
             padding: 20px;
         }
         .message {
-            color: #fad390;
             font-size: 2.5em;
             margin-bottom: 20px;
         }
@@ -167,7 +184,8 @@ export async function htmlDeleteCollection(collectionName) {
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #b33939;
+            background-color: #6717CC;
+            background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
             margin-top: 50px;
             color: white;
             display: flex;
@@ -181,10 +199,9 @@ export async function htmlDeleteCollection(collectionName) {
             padding: 20px;
         }
         .collection-name {
-            color: #f5cd79;
+            color: #fff;
         }
         .message {
-            color: #fad390;
             font-size: 2.5em;
             margin-bottom: 20px;
         }
@@ -195,7 +212,7 @@ export async function htmlDeleteCollection(collectionName) {
     </head>
     <body>
         <div class='wrapper'>
-            <div class="message">🔪 Deleted Collection:<br><span class='collection-name'>${collectionName}</span></div>
+            <div class="message">🔪 Deleted Collection<br><span class='collection-name'>${collectionName}</span></div>
             <div class="timer" id="countdown">Redirecting in 2 seconds...</div>
         </div>
         <script>
@@ -249,7 +266,16 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                 justify-content: center;
             }
             .collection-name {
-                color: #f5cd79;
+                background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                width: fit-content;
+                margin-top: 0px;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 2.7em;
+                font-weight: 600;
             }
             .button-container {
                 margin-bottom: 20px;
@@ -266,8 +292,9 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                 font-size: 0.9em;
                 line-height: 1.38;
             }
-            .button--red {
-                background-color: #d9534f;
+            .button--delete {
+                background-color: #6717CC;
+                background-image: linear-gradient(135deg, #00C0FA 0%, #4261ED 50%, #6717CC 100%);
             }
             table {
                 border-collapse: collapse;
@@ -289,14 +316,14 @@ export async function htmlListCollection(collectionName, collectionListTableRows
                 width: 8px; /* Adjust the width of the scrollbar */
             }
             .table-container::-webkit-scrollbar-track {
-                background: #FEC849; /* Track color */
+                background: #191C24; /* Track color */
             }
             .table-container::-webkit-scrollbar-thumb {
-                background: #7A2E0E; /* Handle color */
+                background: #00C0FA; /* Handle color */
                 border-radius: 4px; /* Handle border radius */
             }
             .table-container::-webkit-scrollbar-thumb:hover {
-                background: #7A2E0E; /* Handle color on hover */
+                background: #00C0FA; /* Handle color on hover */
             }
             th, td {
                 padding: 12px 15px;
@@ -332,11 +359,11 @@ export async function htmlListCollection(collectionName, collectionListTableRows
         </head>
         <body>
             <div class='wrapper'>
-                <h1>Chroma Collection: <span class='collection-name'>${collectionName}</span></h1>
+                <h1 class='collection-name'>${collectionName}</h1>
                 <div class="button-container">
                     <button class="button" onclick="window.location.href='/list-collections';">⇠ BACK TO COLLECTIONS</button>
                     <button class="button" onclick="window.location.href='/list-collection?collectionName=${collectionName}';">🔁 REFRESH COLLECTION</button>
-                    <button class="button button--red" onclick="window.location.href='/delete-collection?collectionName=${collectionName}';">🔪 DELETE COLLECTION</button>
+                    <button class="button button--delete" onclick="window.location.href='/delete-collection?collectionName=${collectionName}';">🔪 DELETE COLLECTION</button>
                 </div>
                 <div class="table-container">
                     <table>
