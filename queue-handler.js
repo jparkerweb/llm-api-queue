@@ -100,7 +100,9 @@ export function setupQueueHandler(app, responseStreams, INACTIVE_THRESHOLD, ACTI
             await streamLlamaData(job.data.fullPrompt, res, job, ACTIVE_CLIENTS, CHUNK_TOKEN_SIZE, CHUNK_TOKEN_OVERLAP); // Pass the entire job object
             responseStreams.delete(requestId); // Clean up after streaming
         } catch (error) {
-            console.error('Error streaming data:', error);
+            console.error(`Error streaming data: ${job.id}`);
+            // console.error('Error streaming data:', error);
+
             if (error.message.includes('slot unavailable')) {
                 await handleSlotUnavailableError(job); // Pass the entire job object here
             }
@@ -163,7 +165,10 @@ async function handleSlotUnavailableError(job) {
         console.log('Retrying job with new ID:', retryJobId);
 
         // Remove the original job from the queue
-        await job.remove().catch(console.error);
+        await job.remove()
+            .catch(async error => {
+                console.error(`Error removing job: ${job.id}`);
+        });
         
         // remove failed job from Chroma
         await deleteFromCollection(job.opts.collectionName, job.opts.promptGUID);
