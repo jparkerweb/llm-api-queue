@@ -46,7 +46,7 @@ This is a web-based chat application that integrates Large Language Model (LLM) 
 
 - Start a Docker Container using server storage from previous step  
   ```
-  docker run -d --name llm-chroma -p 8001:8000 -v C:\Git\llama\chromadb-storage:/data chromadb/chroma
+  docker run -d --name llm-chroma -p 8001:8000 -v C:\Git\llama\chromadb-storage:/chroma/chroma chromadb/chroma
   ```
 
 ---
