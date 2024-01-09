@@ -16,6 +16,9 @@ import {
     htmlListCollection, htmlDeleteCollection
 } from './admin-html-templates.js';
 
+
+// TODO: dynamically set MAX_RAG_RESULTS based on prompt length and LLM token limit (will need to factor in hidden prompts as well)
+const MAX_RAG_RESULTS = parseInt(process.env.MAX_RAG_RESULTS) || 10;                // maximum number of RAG results to return
 const INACTIVE_THRESHOLD = parseInt(process.env.INACTIVE_THRESHOLD) || 1000 * 10;   // threshold used to determine if a client is inactive
 const ACTIVE_CLIENTS = new Map();                                                   // store active clients by requestId
 const ACTIVE_COLLECTIONS = new Map();                                               // store active collections by collectionName
@@ -181,12 +184,9 @@ export function setupApiRoutes(app, CHUNK_TOKEN_SIZE, CHUNK_TOKEN_OVERLAP) {
             let originalPrompt = prompt;
             let originalPromptEmbedding = textChunksAndEmbeddings[0].embedding;
             let prmoptSeperator = "\n\n";
-
-            // query collection for similar text
-            let maxResults = 10; // TODO: dynamically set limit based on prompt length and LLM token limit (will need to factor in hidden prompts as well)
-            
+       
             // query for similar text to send with the prompt
-            const contextQueryResults = await queryCollectionEmbeddings(collectionName, originalPromptEmbedding, maxResults);
+            const contextQueryResults = await queryCollectionEmbeddings(collectionName, originalPromptEmbedding, MAX_RAG_RESULTS);
             
             // sort contextQueryResults by metadata.dateAdded
             if (contextQueryResults && contextQueryResults.ids[0].length > 0) {
