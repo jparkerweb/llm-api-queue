@@ -167,6 +167,8 @@ export function setupApiRoutes(app, CHUNK_TOKEN_SIZE, CHUNK_TOKEN_OVERLAP) {
         const collectionName = String(COLLECTION_NAME);
 
         try {
+            // generate a prompt GUID
+            const promptGUID = generateGUID();
             // setup prompt instructions
             const promptInstructions = process.env.LLM_PROMPT_INSTRUCTIONS
             
@@ -216,7 +218,7 @@ export function setupApiRoutes(app, CHUNK_TOKEN_SIZE, CHUNK_TOKEN_OVERLAP) {
             }
 
             // add job to queue
-            const job = await llamaQueue.add('chat', { fullPrompt, requestId }, { jobId: requestId, collectionName: collectionName });
+            const job = await llamaQueue.add('chat', { fullPrompt, requestId }, { jobId: requestId, collectionName: collectionName, promptGUID: promptGUID });
             console.log('Added job with ID:', job.id); // Log the job ID
 
             let success = true;
@@ -224,7 +226,7 @@ export function setupApiRoutes(app, CHUNK_TOKEN_SIZE, CHUNK_TOKEN_OVERLAP) {
                 // add each chunk to the collection
                 addToCollection(
                     collectionName,
-                    generateGUID(),
+                    promptGUID,
                     textChunksAndEmbedding.embedding,
                     { source: "USER", tokenCount: textChunksAndEmbedding.tokenCount, dateAdded: Date.now() },
                     textChunksAndEmbedding.text,

@@ -13,7 +13,7 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import { llama } from './llm-api-connector.js';
-import { addToCollection } from './chroma.js';
+import { addToCollection, deleteFromCollection } from './chroma.js';
 import { embedText } from './embedding.js';
 import { generateGUID, delay } from './utils.js';
 
@@ -162,8 +162,13 @@ async function handleSlotUnavailableError(job) {
         const retryJobId = `retry-${jobId}-${Date.now()}`;
         console.log('Retrying job with new ID:', retryJobId);
 
+        // Remove the original job from the queue
+        await job.remove().catch(console.error);
+        
+        // remove failed job from Chroma
+        await deleteFromCollection(job.opts.collectionName, job.opts.promptGUID);
+        
         // Re-add the job with the same data and the new job ID
-        await job.remove(); // Remove the original job from the queue
         await llamaQueue.add('chat-retry', job.data, { jobId: retryJobId, delay: 2000 });
     } catch (retryError) {
         console.error('Error retrying job:', retryError, 'Original job ID:', jobId);

@@ -113,6 +113,21 @@ export async function queryCollectionEmbeddings(
 }
 
 
+// ----------------------------
+// -- delete from collection --
+// ----------------------------
+export async function deleteFromCollection(collectionName, ids) {
+	console.log(`⇢ deleteFromCollection: ${collectionName}`);
+	console.log(`⇢ ⇢ ids: ${ids}`);
+	const collection = await chromaClient.getCollection({
+		name: collectionName,
+	});
+	await collection.delete({
+		ids: ids,
+	});
+}
+
+
 // ----------------------
 // -- list collections --
 // ----------------------
