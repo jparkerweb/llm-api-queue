@@ -348,6 +348,7 @@ export async function htmlListCollection(collectionName, collectionListTableRows
             }    
             tr:hover {
                 background-color: #455dec40;
+                cursor: crosshair;
             }    
             @media screen and (max-width: 600px) {
                 table {
