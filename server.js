@@ -14,7 +14,7 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 
-import { chromaHeartbeat } from './chroma.js';
+import { chromaHeartbeat, testChormaMethods } from './chroma.js';
 import { setupApiRoutes } from './api-routes.js';
 import { redisHeartbeat } from './queue-handler.js';
 
@@ -22,12 +22,13 @@ const PORT = process.env.PORT || 3001; // Port for the Express Server to listen 
 const LLM_SERVER_URL = process.env.LLM_SERVER_URL || 'http://localhost:8080';
 
 console.log('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'); // Clears the console
-// 👍 Check if LLM server is running and store n_ctx value from the LLM model.json endpoint
+// 🎉 Check if LLM server is running and store n_ctx value from the LLM model.json endpoint
 const n_ctx = await fetchNCtxValue();
-// 👍 Check if Chroma server is running
-await chromaHeartbeat();
-// 👍 Check if Redis server is running
+// 🎉 Check if Redis server is running
 await redisHeartbeat();
+// 🎉 Check if Chroma server is running
+await chromaHeartbeat();
+await testChormaMethods("test_collection");
 
 // calculate chunk token size and overlap
 const CHUNK_TOKEN_SIZE = Math.floor(n_ctx / 10);
@@ -63,7 +64,7 @@ async function fetchNCtxValue() {
             console.error(`❌ LLM Server Offline\nError fetching model.json: ${response.statusText}`);
             process.exit(1); // Exit the process with an error code
         } else {
-            console.log('👍 LLM Server Online');
+            console.log('🎉 LLM Server Online');
         }
         const data = await response.json();
         return data.n_ctx;
@@ -78,7 +79,7 @@ async function fetchNCtxValue() {
 // -- Start the server --
 // ----------------------
 server.listen(PORT, () => {
-    console.log('👍 Express Server Online')
+    console.log('🎉 Express Server Online')
     console.log('\n↓')
     console.log(`Server running on http://localhost:${PORT}`);
     console.log(`Redis dashboard running on http://localhost:${PORT}/admin/queues`);
