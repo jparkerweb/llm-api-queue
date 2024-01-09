@@ -1,3 +1,12 @@
+# =================================
+# == LLMServer PowerShell Script ==
+# =================================
+# This script is used to run the LLMServer executable with the correct arguments.
+# The script will ask the user to select the server.exe file and the model file.
+# The script will also ask the user to enter the context size, number of simultaneous requests,
+# host and port.
+
+
 # Add Windows Forms for open file dialog
 Add-Type -AssemblyName System.Windows.Forms
 

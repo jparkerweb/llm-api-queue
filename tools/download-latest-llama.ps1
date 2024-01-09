@@ -1,8 +1,31 @@
-﻿# Print a message and wait for user to press Enter
-Write-Host ""
+﻿# ==============================================
+# == Download the latest version of llama.cpp ==
+# ==============================================
+# This script will download and extract the latest version of llama.cpp from
+# https://github.com/ggerganov/llama.cpp/releases
+
+
+# Define the path for the .ini file
+$iniFile = "download-latest-llama.ini"
+
+# Function to read the last used directory from the ini file
+function Read-LastUsedDirectory {
+    if (Test-Path $iniFile) {
+        return Get-Content $iniFile
+    } else {
+        return $null
+    }
+}
+
+# Function to save the selected directory to the ini file
+function Save-LastUsedDirectory($directory) {
+    $directory | Set-Content $iniFile
+}
+
+# Print a message and wait for user to press Enter
 Write-Host ""
 Write-Host "This script will download and extract the latest version of llama.cpp"
-Write-Host "from GitHub 'ggerganov/llama.cpp'"
+Write-Host "from → https://github.com/ggerganov/llama.cpp/releases'"
 Write-Host ""
 Write-Host "You will be asked to a version targeting your hardware capabilities and target directory"
 Write-Host "Please press Enter to continue, or Ctrl + C to exit..."
@@ -48,14 +71,22 @@ switch ($choice) {
 # Add .NET assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
+# Check if there's a previously used directory
+$lastUsedDirectory = Read-LastUsedDirectory
+
 # Create a FolderBrowserDialog object
 $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
 $folderBrowser.Description = "Select a target directory"
+if ($lastUsedDirectory -ne $null -and (Test-Path $lastUsedDirectory)) {
+    $folderBrowser.SelectedPath = $lastUsedDirectory
+}
 $folderBrowser.ShowDialog() | Out-Null
 $targetDirectory = $folderBrowser.SelectedPath
 
-# If a directory was selected
+# Save the selected directory for future use
 if ($targetDirectory -ne '') {
+    Save-LastUsedDirectory $targetDirectory
+
     # GitHub API URL for the latest release
     $apiUrl = "https://api.github.com/repos/ggerganov/llama.cpp/releases/latest"
 
@@ -88,10 +119,11 @@ if ($targetDirectory -ne '') {
     Write-Host "------------------------------------------------------------------------------------"
     Write-Host "Deleting temp zip file >> $zipFile"
     Remove-Item -Path $zipFile
+
+    Write-Host "------------------------------------------------------------------------------------"
+    Write-Host "Latest version of llama.cpp is downloaded and ready for use!"
+    Write-Host "Have a great day :)"
+    Write-Host ""
 } else {
     Write-Host "No directory selected. Exiting script."
 }
-Write-Host "------------------------------------------------------------------------------------"
-Write-Host "Latest version of llama.cpp is downloaded and ready for use!"
-Write-Host "Have a great day :)"
-Write-Host ""
