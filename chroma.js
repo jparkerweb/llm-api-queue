@@ -2,27 +2,34 @@
 // == Description: ChromaDB client ==
 // ==================================
 
-// import environment variables from .env file
+// -------------------------------------------------
+// -- import environment variables from .env file --
+// -------------------------------------------------
 import dotenv from "dotenv";
 dotenv.config();
 
-// load chroma client
+
+// ------------------------
+// -- load Chroma client --
+// ------------------------
 const CHROMA_SERVER_URL = process.env.CHROMA_SERVER_URL || "http://localhost:8001";
 import { ChromaClient } from "chromadb";
 const chromaClient = new ChromaClient({ path: CHROMA_SERVER_URL, });
 
 
 // ---------------
-// -- functions --
+// -- heartbeat --
 // ---------------
-
-
-// heartbeat
+// This function sends a heartbeat to the Chroma server to check if it is running.
 export async function chromaHeartbeat() {
-	const heartbeat = await chromaClient.heartbeat();
-	console.log("chroma heartbeat: ", heartbeat);
+	const heartbeat = await chromaClient.heartbeat()
+		.then((response) => {
+			console.log("👍 Chroma Vector Database Online: ", response);
+		})
+		.catch((error) => {
+			throw new Error("❌ Chroma Vector Database Offline: ", error);
+		});
 }
-chromaHeartbeat();
 
 
 // create collection

@@ -6,6 +6,7 @@
 // exports the queue for use in other files.
 
 
+import { createClient } from 'redis';
 import bullmqPkg from 'bullmq';
 const { Queue, Worker } = bullmqPkg;
 import { createBullBoard } from '@bull-board/api';
@@ -23,6 +24,24 @@ const REDIS_HOST = process.env.REDIS_HOST || "127.0.0.1";
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.MAX_CONCURRENT_REQUESTS) || 2;
 const COMPLETED_JOB_CLEANUP_DELAY = parseInt(process.env.COMPLETED_JOB_CLEANUP_DELAY) || 1000 * 60 * 5;
+
+
+// -------------------------
+// -- Heartbeat for Redis --
+// -------------------------
+export async function redisHeartbeat() {
+    try {
+        const redisClient = createClient({
+            url: `redis://${REDIS_HOST}:${REDIS_PORT}`
+        });
+        await redisClient.connect();
+        console.log('👍 Redis Online');
+        await redisClient.disconnect();
+    } catch (error) {
+        console.error(`❌ Redis Offline: ${error}`);
+        process.exit(1); // Exit the process with an error code
+    }
+}
 
 
 // ---------------------------
